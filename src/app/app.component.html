@@ -1,3 +1,10 @@
-<h1>
-  {{title}}
-</h1>
+<div class="jumbotron">
+  <div class="container">
+    <h1>Angular/Bootstrap Match Game</h1>
+    <p>This is a simple "card match" game written with AngularJS and Bootstrap CSS.</p>
+    <p><a href="https://github.com/zoul0813/angular-match" class="btn btn-primary btn-lg" target="_blank">View Source on GitHub</a>
+  </div>
+</div>
+<div class="container">
+  <match-component [deckSize]="8"></match-component>
+</div>
