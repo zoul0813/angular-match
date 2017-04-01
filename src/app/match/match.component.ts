@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ViewChildren, QueryList, ElementRef, Renderer } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, ViewChildren, QueryList, ElementRef, Renderer } from '@angular/core';
 import { CardComponent } from './card.component';
 import { Card } from './card';
 
@@ -16,7 +16,21 @@ export class MatchComponent implements OnInit {
   @Input()
   deckSize: number = 6;
 
+  @Output('guess')
+  guessEvent: EventEmitter<any> = new EventEmitter();
+
+  @Output('match')
+  matchEvent: EventEmitter<any> = new EventEmitter();
+
+  @Output('complete')
+  completeEvent: EventEmitter<MatchComponent> = new EventEmitter();
+
   ngOnInit() {
+    this.newGame();
+  }
+
+  newGame() {
+    console.log('MatchComponent:newGame', this.deckSize);
     let cards = [
       new Card("fa fa-ambulance"),
       new Card("fa fa-bicycle"),
@@ -33,6 +47,7 @@ export class MatchComponent implements OnInit {
       new Card("fa fa-truck"),
       new Card("fa fa-wheelchair"),
     ]
+    if(this.deckSize > cards.length) this.deckSize = cards.length;
     cards = this.shuffleCards(cards).slice(0, this.deckSize);
 
     let deck: Card[] = [];
@@ -40,6 +55,10 @@ export class MatchComponent implements OnInit {
       deck.push(cards[index]);
       deck.push(cards[index]);
     }
+    this.matches = 0;
+    this.guesses = 0;
+    this.selected = null;
+    this.canSelect = true;
     this.deck = this.shuffleCards(deck);
   }
 
@@ -53,40 +72,55 @@ export class MatchComponent implements OnInit {
     return cards;
   }
 
-  selected: Card = null;
+  selected: CardComponent = null;
   matches: number = 0;
   guesses: number = 0;
   canSelect: boolean = true;
-  onSelect(card: Card) {
+  onSelect(component: CardComponent) {
     if(!this.canSelect) return false;
 
     if(this.selected) {
-      console.debug('MatchComponent:onSelect, selected', card, this.selected);
-      if(card.icon == this.selected.icon) {
-        card.matched = true;
-        this.selected.matched = true;
+      console.debug('MatchComponent:onSelect, selected', component.card, this.selected);
+      if(component == this.selected) {
+        // clicked the same thing, deselecting?
+        component.selected = false;
+        component.failed = false;
+        this.selected = null;
+        return false;
+      }
+      if(component.card.icon == this.selected.card.icon) {
+        component.card.matched = true;
+        this.selected.card.matched = true;
         this.selected = null;
         this.matches++;
+        this.matchEvent.emit(this.matches);
         if(this.matches == this.cards.length / 2) {
-          console.warn('GAME OVER - YOU WON!');
+          this.completeEvent.emit(this);
         }
       } else {
-        this.selected = null;
+        this.selected.failed = true;
+        component.failed = true;
       }
       this.guesses++;
+      this.guessEvent.emit(this.guesses);
       this.canSelect = false;
       setTimeout(() => {
+        component.failed = false;
         this.cards.forEach((component) => {
           console.debug('MatchComponent, forEach', component);
-          if(component.card != this.selected) {
+          if(!this.selected || component.card != this.selected.card) {
             component.selected = false;
           }
         });
+        if(this.selected) {
+          this.selected.failed = false;
+          this.selected = null;
+        }
         this.canSelect = true;
-      }, 750);
+      }, 650);
     } else {
-      console.debug('MatchComponent:onSelect, selecting', card);
-      this.selected = card;
+      console.debug('MatchComponent:onSelect, selecting', component);
+      this.selected = component;
     }
   }
 }

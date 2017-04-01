@@ -12,6 +12,7 @@ import { MatchModule } from './match/match.module';
   ],
   imports: [
     BrowserModule,
+    FormsModule,
     MatchModule
   ],
   providers: [

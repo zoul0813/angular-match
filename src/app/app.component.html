@@ -6,5 +6,26 @@
   </div>
 </div>
 <div class="container">
-  <match-component [deckSize]="8"></match-component>
+  <div class="row mb-3">
+    <div class="col-md-12">
+      <div class="btn-toolbar">
+        <div class="btn-group mr-2">
+          <button type="button" class="btn btn-lg btn-success" (click)="onNewGame()">New Game</button>
+        </div>
+        <div class="input-group">
+          <div class="input-group-addon">Size</div>
+          <input class="form-control" type="number" min="1" max="14" step="1" [(ngModel)]="deckSize" />
+        </div>
+      </div>
+    </div>
+  </div>
+  <match-component [deckSize]="deckSize" (guess)="onGuess($event)" (match)="onMatch($event)" (complete)="onComplete($event)"></match-component>
+  <div class="row mb-3">
+    <div class="col-md-6 card card-inverse card-primary p-3 text-center">
+      Guesses: {{ guesses }}, Matches: {{ matches }}
+    </div>
+    <div class="col-md-6 card card-inverse card-success p-3 text-center">
+      Games: {{ games }}, Complete: {{ completed }}
+    </div>
+  </div>
 </div>

@@ -16,7 +16,7 @@ import { Card } from './card';
 
 }
 
-.btn.btn-success .icon, .btn.btn-primary .icon {
+.btn.btn-success .icon, .btn.btn-primary .icon, .btn.btn-danger .icon {
   visibility: visible;
 }
 `
@@ -27,9 +27,20 @@ export class CardComponent implements OnInit {
   card: Card;
 
   @Output('select')
-  selectEvent: EventEmitter<Card> = new EventEmitter();
+  selectEvent: EventEmitter<CardComponent> = new EventEmitter();
 
   public selected: boolean = false;
+
+  private _failed: boolean = false;
+  get failed(): boolean {
+    return this._failed;
+  }
+
+  set failed(v: boolean) {
+    this._failed = v;
+    // fail or not, change selected
+    this.selected = false;
+  }
 
   constructor(private elementRef: ElementRef, private renderer: Renderer) { 
   }
@@ -38,7 +49,8 @@ export class CardComponent implements OnInit {
   }
 
   onSelect() {
+    if(this.card.matched) return false;
     this.selected = true;
-    this.selectEvent.emit(this.card);
+    this.selectEvent.emit(this);
   }
 }

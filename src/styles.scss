@@ -2,3 +2,11 @@ $fa-font-path: "../node_modules/font-awesome/fonts";
 
 @import "../node_modules/bootstrap/scss/bootstrap";
 @import "../node_modules/font-awesome/scss/font-awesome.scss";
+
+body {
+  margin: 2em auto;
+}
+
+footer {
+  margin-top: 2em;
+}
